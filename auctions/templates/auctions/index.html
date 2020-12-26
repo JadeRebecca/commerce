@@ -3,5 +3,12 @@
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    <p>The default route of your web application should let users view all of the currently active auction listings. 
+        For each active listing, this page should display (at minimum) the title, description, current price, and photo (if one exists for the listing).
+    </p>
+    <ul>
+        <li><a href="{% url 'listing' 1 %}">Item 1</a></li>
+        <li><a href="{% url 'listing' 2 %}">Item 2</a></li>
+        <li><a href="{% url 'listing' 3 %}">Item 3</a></li>
+    </ul>
 {% endblock %}
