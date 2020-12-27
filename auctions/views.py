@@ -71,19 +71,19 @@ def listing(request, id):
         "listing": listing
     })
 
+def listing_categorie(request, cat_id):
+    listings = Listing.objects.filter(categorie=cat_id)
+    categorie = Categorie.objects.get(pk=cat_id)
+    return render(request, "auctions/index.html",{
+        "listings": listings,
+        "categorie": categorie
+    })
+
 def categorie(request):
     categories = Categorie.objects.all()
     return render(request, "auctions/categorie.html",{
         "categories" : categories
     })
-
-#def listings_categorie(request, id):
-    #return render(request, "auctions/create.html")
-    # listing = Listing.objects.get(categorie=id)
-    # return render(request, "auctions/index.html",{
-    #     "listing": listing
-    # })
-
 
 def create(request):
     return render(request, "auctions/create.html")

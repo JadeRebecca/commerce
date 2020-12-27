@@ -11,8 +11,7 @@
 
     <div class="list-group">
         {% for categorie in categories %}
-            <!-- <a href="{% url 'listings_categorie' categorie.id %}" class="list-group-item list-group-item-action">{{ categorie }}</a> -->
-            <a href="{% url 'listing' categorie.id %}">More details</a>
+            <a href="{% url 'listing_categorie' categorie.id %}" class="list-group-item list-group-item-action">{{ categorie }}</a>
         {% endfor %}
     </div>
 

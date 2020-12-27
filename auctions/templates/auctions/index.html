@@ -1,8 +1,11 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-    
+    {% if categorie %}
+        <h2>Active Listings > {{ categorie }}</h2>
+    {% else %}
+        <h2>Active Listings</h2>
+    {% endif %}
     <div class="jumbotron">
         <p>The default route of your web application should let users view all of the currently active auction listings. 
             For each active listing, this page should display (at minimum) the title, description, current price, and photo (if one exists for the listing).
@@ -24,6 +27,8 @@
                 <a href="{% url 'listing' listing.id %}">More details</a>
             </div>
             </div>
+    {% empty %}
+            No listing
     {% endfor %}
     
 {% endblock %}
