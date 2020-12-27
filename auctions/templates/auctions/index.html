@@ -2,13 +2,28 @@
 
 {% block body %}
     <h2>Active Listings</h2>
+    
+    <div class="jumbotron">
+        <p>The default route of your web application should let users view all of the currently active auction listings. 
+            For each active listing, this page should display (at minimum) the title, description, current price, and photo (if one exists for the listing).
+        </p>
+    </div>
 
-    <p>The default route of your web application should let users view all of the currently active auction listings. 
-        For each active listing, this page should display (at minimum) the title, description, current price, and photo (if one exists for the listing).
-    </p>
-    <ul>
-        <li><a href="{% url 'listing' 1 %}">Item 1</a></li>
-        <li><a href="{% url 'listing' 2 %}">Item 2</a></li>
-        <li><a href="{% url 'listing' 3 %}">Item 3</a></li>
-    </ul>
+        {% for listing in listings %}
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="..." alt="Card image cap">
+                <div class="card-body">
+                  <h5 class="card-title">{{ listing.title }}</h5>
+                  <p class="card-text">{{ listing.description }}</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">{{ listing.categorie }}</li>
+                  <li class="list-group-item">{{ listing.start_at }}</li>
+                </ul>
+                <div class="card-body">
+                  <a href="#" class="card-link"><a href="{% url 'listing' listing.id %}">More details</a>
+                </div>
+              </div>
+        {% endfor %}
+    
 {% endblock %}

@@ -7,11 +7,14 @@ class User(AbstractUser):
 
 class Categorie(models.Model):
     description = models.CharField(max_length=64)
+    
+    def __str__(self):
+        return f"{self.description}"
 
 class Listing(models.Model):
     title = models.CharField(max_length=64)
     description = models.TextField()
-    start_at = models.DateField()
+    start_at = models.DateTimeField()
     categorie = models.ForeignKey(Categorie, models.SET_NULL, blank=True, null=True )
     #img_url
     active = models.BooleanField()
