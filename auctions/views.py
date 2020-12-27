@@ -76,10 +76,23 @@ def categorie(request):
     return render(request, "auctions/categorie.html",{
         "categories" : categories
     })
-    return render(request, "auctions/categorie.html")
+
+#def listings_categorie(request, id):
+    #return render(request, "auctions/create.html")
+    # listing = Listing.objects.get(categorie=id)
+    # return render(request, "auctions/index.html",{
+    #     "listing": listing
+    # })
+
 
 def create(request):
     return render(request, "auctions/create.html")
 
 def watchlist(request):
-    return render(request, "auctions/watchlist.html")
+    #listings = User.watchlist.all()
+    user = User.objects.get(username="jade")
+    listing = user.watchlist.all()
+    return render(request, "auctions/watchlist.html",{
+        "user" : user,
+        "listing" : listing
+    })

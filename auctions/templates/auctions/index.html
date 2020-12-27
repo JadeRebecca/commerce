@@ -9,21 +9,21 @@
         </p>
     </div>
 
-        {% for listing in listings %}
-            <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="..." alt="Card image cap">
-                <div class="card-body">
-                  <h5 class="card-title">{{ listing.title }}</h5>
-                  <p class="card-text">{{ listing.description }}</p>
-                </div>
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item">{{ listing.categorie }}</li>
-                  <li class="list-group-item">{{ listing.start_at }}</li>
-                </ul>
-                <div class="card-body">
-                  <a href="#" class="card-link"><a href="{% url 'listing' listing.id %}">More details</a>
-                </div>
-              </div>
-        {% endfor %}
+    {% for listing in listings %}
+        <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src="..." alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">{{ listing.title }}</h5>
+                <p class="card-text">{{ listing.description }}</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">{{ listing.categorie }}</li>
+                <li class="list-group-item">{{ listing.start_at }}</li>
+            </ul>
+            <div class="card-body">
+                <a href="{% url 'listing' listing.id %}">More details</a>
+            </div>
+            </div>
+    {% endfor %}
     
 {% endblock %}

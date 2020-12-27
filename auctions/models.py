@@ -2,9 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class User(AbstractUser):
-    pass
-
 class Categorie(models.Model):
     description = models.CharField(max_length=64)
     
@@ -16,9 +13,14 @@ class Listing(models.Model):
     description = models.TextField()
     start_at = models.DateTimeField()
     categorie = models.ForeignKey(Categorie, models.SET_NULL, blank=True, null=True )
-    #img_url
+    picture = models.URLField(blank=True, null=True)
     active = models.BooleanField()
 
+    def __str__(self):
+        return f"{self.title}"
+
+class User(AbstractUser):
+    watchlist = models.ManyToManyField(Listing, related_name='watchers', blank=True)
 
 class Bid(models.Model):
     listing  = models.ForeignKey(Listing, on_delete=models.CASCADE)
@@ -32,8 +34,3 @@ class Comment(models.Model):
     user = models.ForeignKey(User, models.SET_NULL, blank=True, null=True )
     created_at = models.DateField(auto_now_add=True)
     Comment = models.TextField()
-
-
-class Watchlist(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
