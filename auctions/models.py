@@ -14,7 +14,7 @@ class Listing(models.Model):
     start_at = models.DateTimeField()
     categorie = models.ForeignKey(Categorie, models.SET_NULL, blank=True, null=True )
     picture = models.URLField(blank=True, null=True)
-    active = models.BooleanField()
+    active = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.title}"
@@ -24,7 +24,7 @@ class User(AbstractUser):
 
 class Bid(models.Model):
     listing  = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=5, decimal_places=2)
+    amount = models.DecimalField(max_digits=5, decimal_places=2,  blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateField(auto_now_add=True)
     winner = models.BooleanField()
@@ -32,5 +32,5 @@ class Bid(models.Model):
 class Comment(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     user = models.ForeignKey(User, models.SET_NULL, blank=True, null=True )
-    created_at = models.DateField(auto_now_add=True)
-    Comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    Comment = models.TextField(blank=False)

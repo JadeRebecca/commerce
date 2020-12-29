@@ -1,8 +1,9 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+
 
 from .models import User, Listing, Categorie
 
@@ -65,13 +66,15 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-def listing(request, id):
-    listing = Listing.objects.get(pk=id)
+def listing(request, listing_id):
+    listing_id = int(listing_id)
+    listing = get_object_or_404(Listing, pk=listing_id)
     return render(request, "auctions/listing.html",{
         "listing": listing
     })
 
 def listing_categorie(request, cat_id):
+    cat_id = int(cat_id)
     listings = Listing.objects.filter(categorie=cat_id)
     categorie = Categorie.objects.get(pk=cat_id)
     return render(request, "auctions/index.html",{
@@ -86,7 +89,8 @@ def categorie(request):
     })
 
 def create(request):
-    return render(request, "auctions/create.html")
+    if request.method == "POST":
+        return render(request, "auctions/create.html")
 
 def watchlist(request):
     #listings = User.watchlist.all()
