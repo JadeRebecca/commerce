@@ -3,14 +3,17 @@
 {% block body %}
 
     <h2>Create</h2>
-    <p>Users should be able to visit a page to create a new listing. 
+    <div class="jumbotron">Users should be able to visit a page to create a new listing. 
         They should be able to specify a title for the listing, a text-based description, and what the starting bid should be. 
         Users should also optionally be able to provide a URL for an image for the listing and/or a category 
         (e.g. Fashion, Toys, Electronics, Home, etc.).
-    </p>
+    </div>
 
     <form action="{% url 'create' %}" method="post"> 
         {% csrf_token %}
+        <input type="text" name="title" placeholder="Title">
+        <textarea name="description" rows="5" cols="33"></textarea>
+        <input type="datetime-local" name="start_at">
         <select name="categorie">
             {% for categorie in categories %}
             <option value="{{ categorie.id }}">{{ categorie }}</option>

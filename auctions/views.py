@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 
 
-from .models import User, Listing, Categorie
+from .models import User, Listing, Categorie, ListingForm
 
 
 def index(request):
@@ -89,8 +89,21 @@ def categorie(request):
     })
 
 def create(request):
+    categories = Categorie.objects.all()
     if request.method == "POST":
-        return render(request, "auctions/create.html")
+        #title = request.POST["title"]
+        #categorie = int(request.POST["categorie"])
+        f = ListingForm(request.POST)
+        if f.is_valid():
+            new_listing = f.save()
+            print("listing saved")
+        else:
+            print("not saved")
+            print(f.errors.as_data())
+        #return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+    return render(request, "auctions/create.html",{
+        "categories": categories
+    })
 
 def watchlist(request):
     #listings = User.watchlist.all()
