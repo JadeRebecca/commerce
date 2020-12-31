@@ -39,4 +39,4 @@ class Comment(models.Model):
 class ListingForm(ModelForm):
     class Meta:
         model = Listing
-        fields = ['title','description','start_at','categorie']
+        fields = ['title','description','start_at','categorie','picture']
