@@ -120,3 +120,10 @@ def add_watchlist(request, listing_id):
         listing = Listing.objects.get(pk=int(listing_id))
         request.user.watchlist.add(listing)
         return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+
+@login_required
+def remove_watchlist(request, listing_id):
+    if request.method == "POST":
+        listing = Listing.objects.get(pk=int(listing_id))
+        request.user.watchlist.remove(listing)
+        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
