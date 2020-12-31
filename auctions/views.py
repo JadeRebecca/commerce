@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -34,8 +35,9 @@ def login_view(request):
     else:
         return render(request, "auctions/login.html")
 
-
+@login_required
 def logout_view(request):
+    
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
@@ -88,11 +90,10 @@ def categorie(request):
         "categories" : categories
     })
 
+@login_required
 def create(request):
     categories = Categorie.objects.all()
     if request.method == "POST":
-        #title = request.POST["title"]
-        #categorie = int(request.POST["categorie"])
         f = ListingForm(request.POST)
         if f.is_valid():
             new_listing = f.save()
@@ -101,11 +102,11 @@ def create(request):
         else:
             print("not saved")
             print(f.errors.as_data())
-       
     return render(request, "auctions/create.html",{
         "categories": categories
     })
-
+    
+@login_required
 def watchlist(request):
     #listings = User.watchlist.all()
     user = User.objects.get(username="jade")
