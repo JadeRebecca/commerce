@@ -108,10 +108,15 @@ def create(request):
     
 @login_required
 def watchlist(request):
-    #listings = User.watchlist.all()
-    user = User.objects.get(username="jade")
-    listing = user.watchlist.all()
-    return render(request, "auctions/watchlist.html",{
-        "user" : user,
-        "listing" : listing
+    listings = request.user.watchlist.all()
+    return render(request, "auctions/index.html",{
+        "listings" : listings,
+        "watchlist": True
     })
+
+@login_required
+def add_watchlist(request, listing_id):
+    if request.method == "POST":
+        listing = Listing.objects.get(pk=int(listing_id))
+        request.user.watchlist.add(listing)
+        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))

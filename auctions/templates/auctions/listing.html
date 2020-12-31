@@ -21,9 +21,13 @@
             start at : {{ listing.start_at }}
         </div>
         <div class="card-body">
-          <h5 class="card-title">{{ listing.title }}</h5>
-          <p class="card-text">{{ listing.description }}</p>
-          <a href="#" class="btn btn-primary">Place bid</a>
+            <h5 class="card-title">{{ listing.title }}</h5>
+            <p class="card-text">{{ listing.description }}</p>
+            <a href="#" class="btn btn-primary">Place bid</a>
+            <form action="{% url 'add_watchlist' listing.id %}" method="post"> 
+                {% csrf_token %}
+                <input type="submit" value="Submit">
+            </form>
         </div>
-      </div>
+    </div>
 {% endblock %}
