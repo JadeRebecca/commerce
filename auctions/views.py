@@ -69,9 +69,12 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-def listing(request, listing_id):
+@login_required
+def listing_logged_in(request, listing_id, username):
+    print("view logged")
     listing_id = int(listing_id)
     listing = get_object_or_404(Listing, pk=listing_id)
+    #watchlist management
     if request.user.watchlist.filter(pk=listing.id).exists():
         in_my_watchlist = True
     else:
@@ -80,6 +83,14 @@ def listing(request, listing_id):
     return render(request, "auctions/listing.html",{
         "listing": listing,
         "in_my_watchlist" : in_my_watchlist
+    })
+
+def listing(request, listing_id):
+    print("view not logged")
+    listing_id = int(listing_id)
+    listing = get_object_or_404(Listing, pk=listing_id)
+    return render(request, "auctions/listing.html",{
+        "listing": listing
     })
 
 def listing_categorie(request, cat_id):
@@ -126,11 +137,11 @@ def add_watchlist(request, listing_id):
     if request.method == "POST":
         listing = Listing.objects.get(pk=int(listing_id))
         request.user.watchlist.add(listing)
-        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+        return HttpResponseRedirect(reverse("listing", args=(listing.id, request.user.username,)))
 
 @login_required
 def remove_watchlist(request, listing_id):
     if request.method == "POST":
         listing = Listing.objects.get(pk=int(listing_id))
         request.user.watchlist.remove(listing)
-        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+        return HttpResponseRedirect(reverse("listing", args=(listing.id, request.user.username,)))
