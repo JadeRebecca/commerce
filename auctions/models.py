@@ -35,7 +35,7 @@ class Comment(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     user = models.ForeignKey(User, models.SET_NULL, blank=True, null=True )
     created_at = models.DateTimeField(auto_now_add=True)
-    Comment = models.TextField(blank=False)
+    comment = models.TextField(blank=False)
 
 class ListingForm(ModelForm):
     class Meta:

@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
 
-from .models import User, Listing, Categorie, ListingForm
+from .models import User, Listing, Categorie, ListingForm, Comment
 
 
 def index(request):
@@ -71,9 +71,9 @@ def register(request):
 
 @login_required
 def listing_logged_in(request, listing_id, username):
-    print("view logged")
     listing_id = int(listing_id)
     listing = get_object_or_404(Listing, pk=listing_id)
+    comments = Comment.objects.filter(listing=listing_id)
     #watchlist management
     if request.user.watchlist.filter(pk=listing.id).exists():
         in_my_watchlist = True
@@ -82,15 +82,17 @@ def listing_logged_in(request, listing_id, username):
 
     return render(request, "auctions/listing.html",{
         "listing": listing,
+        "comments": comments,
         "in_my_watchlist" : in_my_watchlist
     })
 
 def listing(request, listing_id):
-    print("view not logged")
     listing_id = int(listing_id)
     listing = get_object_or_404(Listing, pk=listing_id)
+    comments = Comment.objects.filter(listing=listing_id)
     return render(request, "auctions/listing.html",{
-        "listing": listing
+        "listing": listing,
+        "comments": comments
     })
 
 def listing_categorie(request, cat_id):

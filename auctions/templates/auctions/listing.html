@@ -38,7 +38,19 @@
                 </form>
                 {% endif %}
             {% endif %}
-            
+
         </div>
+    </div>
+
+    <div>
+        {% for comment in comments %}
+            <div>
+                <div>{{ comment.comment}}</div>
+                <div>{{ comment.user}}</div>
+                <div>{{ comment.created_at}}</div>
+            </div>
+        {% empty %}
+            No comment
+        {% endfor %}
     </div>
 {% endblock %}
