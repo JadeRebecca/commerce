@@ -13,6 +13,7 @@ class Listing(models.Model):
     title = models.CharField(max_length=64)
     description = models.TextField()
     start_at = models.DateTimeField()
+    starting_bid = models.DecimalField(max_digits=5, decimal_places=2,  blank=False, default='0.1')
     categorie = models.ForeignKey(Categorie, models.SET_NULL, blank=True, null=True )
     picture = models.URLField(blank=True, null=True)
     active = models.BooleanField(default=False)
@@ -39,4 +40,4 @@ class Comment(models.Model):
 class ListingForm(ModelForm):
     class Meta:
         model = Listing
-        fields = ['title','description','start_at','categorie','picture']
+        fields = ['title','description','start_at','starting_bid','categorie','picture']
