@@ -97,10 +97,11 @@ def create(request):
         if f.is_valid():
             new_listing = f.save()
             print("listing saved")
+            return HttpResponseRedirect(reverse("listing", args=(new_listing.id,)))
         else:
             print("not saved")
             print(f.errors.as_data())
-        #return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+       
     return render(request, "auctions/create.html",{
         "categories": categories
     })
