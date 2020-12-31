@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from django.core.exceptions import ObjectDoesNotExist
 
 
 from .models import User, Listing, Categorie, ListingForm
@@ -71,8 +72,14 @@ def register(request):
 def listing(request, listing_id):
     listing_id = int(listing_id)
     listing = get_object_or_404(Listing, pk=listing_id)
+    if request.user.watchlist.filter(pk=listing.id).exists():
+        in_my_watchlist = True
+    else:
+        in_my_watchlist = False
+
     return render(request, "auctions/listing.html",{
-        "listing": listing
+        "listing": listing,
+        "in_my_watchlist" : in_my_watchlist
     })
 
 def listing_categorie(request, cat_id):
