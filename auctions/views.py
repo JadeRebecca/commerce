@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 from .models import User, Listing, Categorie, ListingForm, Comment
+from .forms import CommentForm
 
 
 def index(request):
@@ -71,6 +72,7 @@ def register(request):
 
 @login_required
 def listing_logged_in(request, listing_id, username):
+    form = CommentForm()
     listing_id = int(listing_id)
     listing = get_object_or_404(Listing, pk=listing_id)
     comments = Comment.objects.filter(listing=listing_id)
@@ -83,7 +85,8 @@ def listing_logged_in(request, listing_id, username):
     return render(request, "auctions/listing.html",{
         "listing": listing,
         "comments": comments,
-        "in_my_watchlist" : in_my_watchlist
+        "in_my_watchlist" : in_my_watchlist,
+        "form": form
     })
 
 def listing(request, listing_id):
@@ -117,10 +120,8 @@ def create(request):
         f = ListingForm(request.POST)
         if f.is_valid():
             new_listing = f.save()
-            print("listing saved")
             return HttpResponseRedirect(reverse("listing", args=(new_listing.id,)))
         else:
-            print("not saved")
             print(f.errors.as_data())
     return render(request, "auctions/create.html",{
         "categories": categories
@@ -147,3 +148,13 @@ def remove_watchlist(request, listing_id):
         listing = Listing.objects.get(pk=int(listing_id))
         request.user.watchlist.remove(listing)
         return HttpResponseRedirect(reverse("listing", args=(listing.id, request.user.username,)))
+
+@login_required
+def add_comment(request, listing_id):
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.cleaned_data['comment']
+            new_comment = Comment(listing= Listing.objects.get(pk=listing_id), user=request.user, comment=comment)
+            new_comment.save()
+            return HttpResponseRedirect(reverse("listing", args=(listing_id, request.user.username,)))

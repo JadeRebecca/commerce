@@ -43,6 +43,15 @@
     </div>
 
     <div>
+        <h2>Commentaires</h2>
+        {% if user.is_authenticated %}
+            <form action="{% url 'add_comment' listing.id %}" method="post"> 
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit" class="btn btn-primary" value="Submit">
+            </form>
+        {% endif %}
+
         {% for comment in comments %}
             <div>
                 <div>{{ comment.comment}}</div>
