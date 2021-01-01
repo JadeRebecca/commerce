@@ -1,48 +1,46 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+<div class="container">
     {% if categorie %}
-        <h2>Active Listings > {{ categorie }}</h2>
-    {% elif watchlist %}
-        <h2>My watchlist of active listing</h2>
-    {% else %}
-        <h2>Active listing</h2>
-    {% endif %}
-    <div class="jumbotron">
-        <p>The default route of your web application should let users view all of the currently active auction listings. 
-            For each active listing, this page should display (at minimum) the title, description, current price, and photo (if one exists for the listing).
-        </p>
-    </div>
-
-    <div class="row">
-    {% for listing in listings %}
-    <div class="col-12 col-sm-6 col-md-4 mt-5">
-        <div class="card">
-            {% if listing.picture %}
-            <div style="height: 400px; overflow:hidden">
-                <img  class="card-img-top" src="{{ listing.picture }}" alt="Card image cap">
-            </div>
-            {% endif %}
-            <div class="card-body">
-                <h5 class="card-title">{{ listing.title }}</h5>
-                <p class="card-text">{{ listing.description }}</p>
-            </div>
-            <ul class="list-group list-group-flush"></ul>
-                <li class="list-group-item"><span class="badge badge-info">{{ listing.categorie }}</span></li>
-                <li class="list-group-item">{{ listing.start_at }}</li>
-                <li class="list-group-item">Starting bid {{ listing.starting_bid }}$</li>
-            </ul>
-            <div class="card-footer">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'listing' listing.id user.username %}">More details</a>
-                {% else %}
-                    <a href="{% url 'listing' listing.id %}">More details</a>
-                {% endif %}
+        <div class="row justify-content-center py-5">
+            <div class="col-lg-8">
+                <div class="section_tittle text-center">
+                    <h2>Categorie :  <span>-</span>  {{ categorie }}</h2>
+                </div>
             </div>
         </div>
-    </div>
-    {% empty %}
-            No listing
-    {% endfor %}
-    </div>
+    {% endif %}
+
+    <section class="cat_product_area ">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="row align-items-center latest_product_inner">
+                        {% for listing in listings %}
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <div class="single_product_item">
+                                    <div style="height: 400px; overflow:hidden">
+                                        <img  class="card-img-top" src="{{ listing.picture }}" alt="Card image cap">
+                                    </div>
+                                    <div class="single_product_text">
+                                        <h4>{{ listing.title }}</h4>
+                                        <h3>${{ listing.starting_bid }}</h3>
+                                        {% if user.is_authenticated %}
+                                            <a class="add_cart" href="{% url 'listing' listing.id user.username %}">More details</a>
+                                        {% else %}
+                                            <a class="add_cart" href="{% url 'listing' listing.id %}">More details</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            No listing
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

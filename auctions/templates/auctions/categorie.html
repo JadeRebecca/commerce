@@ -1,18 +1,33 @@
 {% extends "auctions/layout.html" %}
 
-{% block body %}
+{% block title %}
+    Categorie
+{% endblock %}
 
+{% block breadcrumb %}
     <h2>Categorie</h2>
+{% endblock %}
+    
+{% block body %}
+    <section class="feature_part padding_top">
+        <div class="container">
+            <div class="row align-items-center justify-content-between">
+                {% for categorie in categories %}
+                    <div class="col-6">
+                        <div class="single_feature_post_text">
+                            <p>insert text here</p>
+                            <h3>{{ categorie }}</h3>
+                            <a href="{% url 'listing_categorie' categorie.id %}" class="feature_btn">EXPLORE NOW <i class="fas fa-play"></i></a>
+                            
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
 
     <div class="jumbotron">
         <p>Users should be able to visit a page that displays a list of all listing categories. 
         Clicking on the name of any category should take the user to a page that displays all of the active listings in that category.</p>
     </div>
-
-    <div class="list-group">
-        {% for categorie in categories %}
-            <a href="{% url 'listing_categorie' categorie.id %}" class="list-group-item list-group-item-action">{{ categorie }}</a>
-        {% endfor %}
-    </div>
-
 {% endblock %}

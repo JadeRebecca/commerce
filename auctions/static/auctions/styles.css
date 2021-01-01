@@ -1,16 +1,8 @@
 body {
     padding: 10px;
 }
-.imgcontainer {
-    /*width: 300px;
-    margin: 0 auto;
-    overflow: hidden;
-    position: relative;*/
-    height: 200px;
-  }
-  
-.imgstyle {
-    left: 50%;
-    margin-left: -200px;
-    position: absolute;
-  }
+
+.listing_img{
+  max-height: 400px;
+  max-width: 500px;
+}
