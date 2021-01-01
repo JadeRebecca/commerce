@@ -29,7 +29,7 @@ class Bid(models.Model):
     amount = models.DecimalField(max_digits=5, decimal_places=2,  blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateField(auto_now_add=True)
-    winner = models.BooleanField()
+    winner = models.BooleanField(default=False)
 
 class Comment(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)

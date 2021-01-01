@@ -5,10 +5,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max
 
 
-from .models import User, Listing, Categorie, ListingForm, Comment
-from .forms import CommentForm
+from .models import User, Listing, Categorie, Bid, ListingForm, Comment
+from .forms import CommentForm, BidForm
 
 
 def index(request):
@@ -72,20 +73,30 @@ def register(request):
 
 @login_required
 def listing_logged_in(request, listing_id, username):
+    bidForm = BidForm()
     form = CommentForm()
     listing_id = int(listing_id)
     listing = get_object_or_404(Listing, pk=listing_id)
     comments = Comment.objects.filter(listing=listing_id)
+    #bid management
+    if Bid.objects.filter(listing=listing_id).exists():
+        foundMax = Bid.objects.filter(listing=listing_id).aggregate(Max('amount'))
+        bidMax = foundMax['amount__max']
+        print("il y a une enchère max")
+    else:
+        bidMax = listing.starting_bid
+        print("no bid yet")
     #watchlist management
     if request.user.watchlist.filter(pk=listing.id).exists():
         in_my_watchlist = True
     else:
         in_my_watchlist = False
-
     return render(request, "auctions/listing.html",{
         "listing": listing,
+        "bidMax": "{:.2f}".format(bidMax),
         "comments": comments,
         "in_my_watchlist" : in_my_watchlist,
+        "bidForm": bidForm,
         "form": form
     })
 
@@ -157,4 +168,14 @@ def add_comment(request, listing_id):
             comment = form.cleaned_data['comment']
             new_comment = Comment(listing= Listing.objects.get(pk=listing_id), user=request.user, comment=comment)
             new_comment.save()
+            return HttpResponseRedirect(reverse("listing", args=(listing_id, request.user.username,)))
+
+@login_required
+def add_bid(request, listing_id):
+    if request.method == "POST":
+        form = BidForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            new_bid = Bid(listing= Listing.objects.get(pk=listing_id), user=request.user, amount=amount)
+            new_bid.save()
             return HttpResponseRedirect(reverse("listing", args=(listing_id, request.user.username,)))
