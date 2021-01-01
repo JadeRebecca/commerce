@@ -14,9 +14,15 @@
         </p>
     </div>
 
+    <div class="row">
     {% for listing in listings %}
-        <div class="card" style="width: 18rem;">
-            <img class="card-img-top" src="{{ listing.picture }}" alt="Card image cap">
+    <div class="col-12 col-sm-6 col-md-4 mt-5">
+        <div class="card">
+            {% if listing.picture %}
+            <div style="height: 400px; overflow:hidden">
+                <img  class="card-img-top" src="{{ listing.picture }}" alt="Card image cap">
+            </div>
+            {% endif %}
             <div class="card-body">
                 <h5 class="card-title">{{ listing.title }}</h5>
                 <p class="card-text">{{ listing.description }}</p>
@@ -34,8 +40,9 @@
                 {% endif %}
             </div>
         </div>
+    </div>
     {% empty %}
             No listing
     {% endfor %}
-    
+    </div>
 {% endblock %}
