@@ -8,12 +8,19 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max
 
 
-from .models import User, Listing, Categorie, Bid, ListingForm, Comment
-from .forms import CommentForm, BidForm
+from .models import User, Listing, Categorie, Bid, Comment
+from .forms import CommentForm, BidForm, ListingForm
 
 
 def index(request):
     listings = Listing.objects.all()
+    for l in listings:
+        if Bid.objects.filter(listing=l.id).exists():
+            foundMax = Bid.objects.filter(listing=l.id).aggregate(Max('amount'))
+            bidMax = foundMax['amount__max']
+            l.bidMax = bidMax
+        else:
+            l.bidMax = l.starting_bid        
     return render(request, "auctions/index.html",{
         "listings" : listings
     })
@@ -73,11 +80,20 @@ def register(request):
 
 @login_required
 def listing_logged_in(request, listing_id, username):
-    bidForm = BidForm()
-    form = CommentForm()
     listing_id = int(listing_id)
     listing = get_object_or_404(Listing, pk=listing_id)
     comments = Comment.objects.filter(listing=listing_id)
+    #watchlist management
+    if request.user.watchlist.filter(pk=listing.id).exists():
+        in_my_watchlist = True
+    else:
+        in_my_watchlist = False
+    context = {
+        'listing' : listing,
+        'comments' : comments,
+        'in_my_watchlist' : in_my_watchlist
+    }
+
     #bid management
     if Bid.objects.filter(listing=listing_id).exists():
         foundMax = Bid.objects.filter(listing=listing_id).aggregate(Max('amount'))
@@ -86,19 +102,31 @@ def listing_logged_in(request, listing_id, username):
     else:
         bidMax = listing.starting_bid
         print("no bid yet")
-    #watchlist management
-    if request.user.watchlist.filter(pk=listing.id).exists():
-        in_my_watchlist = True
-    else:
-        in_my_watchlist = False
-    return render(request, "auctions/listing.html",{
-        "listing": listing,
-        "bidMax": "{:.2f}".format(bidMax),
-        "comments": comments,
-        "in_my_watchlist" : in_my_watchlist,
-        "bidForm": bidForm,
-        "form": form
-    })
+
+    if request.method == "POST":
+        form = BidForm(request.POST)
+        custom_error = False
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            if amount > bidMax :
+                new_bid = Bid(listing= Listing.objects.get(pk=listing_id), user=request.user, amount=amount)
+                new_bid.save()
+                bidMax = amount
+            else:
+                custom_error = "You must place a bid superior to the current price!"
+                print("custom error")
+                context['custom_error'] = custom_error
+        else:
+            context['errors'] = form.errors.items()
+              
+    context['bidMax'] = bidMax
+        
+    bidForm = BidForm()
+    form = CommentForm()
+    context['bidForm'] = bidForm
+    context['form'] = form
+
+    return render(request, "auctions/listing.html", context) 
 
 def listing(request, listing_id):
     listing_id = int(listing_id)
@@ -141,6 +169,13 @@ def create(request):
 @login_required
 def watchlist(request):
     listings = request.user.watchlist.all()
+    for l in listings:
+        if Bid.objects.filter(listing=l.id).exists():
+            foundMax = Bid.objects.filter(listing=l.id).aggregate(Max('amount'))
+            bidMax = foundMax['amount__max']
+            l.bidMax = bidMax
+        else:
+            l.bidMax = l.starting_bid        
     return render(request, "auctions/index.html",{
         "listings" : listings,
         "watchlist": True
@@ -170,12 +205,14 @@ def add_comment(request, listing_id):
             new_comment.save()
             return HttpResponseRedirect(reverse("listing", args=(listing_id, request.user.username,)))
 
-@login_required
-def add_bid(request, listing_id):
-    if request.method == "POST":
-        form = BidForm(request.POST)
-        if form.is_valid():
-            amount = form.cleaned_data['amount']
-            new_bid = Bid(listing= Listing.objects.get(pk=listing_id), user=request.user, amount=amount)
-            new_bid.save()
-            return HttpResponseRedirect(reverse("listing", args=(listing_id, request.user.username,)))
+# @login_required
+# def add_bid(request, listing_id):
+#     if request.method == "POST":
+#         form = BidForm(request.POST)
+#         if form.is_valid():
+#             amount = form.cleaned_data['amount']
+#             new_bid = Bid(listing= Listing.objects.get(pk=listing_id), user=request.user, amount=amount)
+#             new_bid.save()
+#         else:
+#             print(form.errors.items())
+#         return HttpResponseRedirect(reverse("listing", args=(listing_id, request.user.username,)))

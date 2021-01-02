@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.forms import ModelForm
+
 
 
 class Categorie(models.Model):
@@ -36,8 +36,3 @@ class Comment(models.Model):
     user = models.ForeignKey(User, models.SET_NULL, blank=True, null=True )
     created_at = models.DateTimeField(auto_now_add=True)
     comment = models.TextField(blank=False)
-
-class ListingForm(ModelForm):
-    class Meta:
-        model = Listing
-        fields = ['title','description','start_at','starting_bid','categorie','picture']

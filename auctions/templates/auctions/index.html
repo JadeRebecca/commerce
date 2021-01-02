@@ -6,7 +6,7 @@
         <div class="row justify-content-center py-5">
             <div class="col-lg-8">
                 <div class="section_tittle text-center">
-                    <h2>Categorie :  <span>-</span>  {{ categorie }}</h2>
+                    <h2>Categorie :   {{ categorie }}</h2>
                 </div>
             </div>
         </div>
@@ -25,7 +25,7 @@
                                     </div>
                                     <div class="single_product_text">
                                         <h4>{{ listing.title }}</h4>
-                                        <h3>${{ listing.starting_bid }}</h3>
+                                        <h3>${{ listing.bidMax }}</h3>
                                         {% if user.is_authenticated %}
                                             <a class="add_cart" href="{% url 'listing' listing.id user.username %}">More details</a>
                                         {% else %}
@@ -43,4 +43,20 @@
         </div>
     </section>
 </div>
+{% endblock %}
+
+{% block javascript %}
+    {% if categorie %}
+        <script type="text/javascript">
+            setCurrentNavBarColor("nav-categorie");
+        </script>
+    {% elif watchlist %}
+        <script type="text/javascript">
+            setCurrentNavBarColor("nav-watchlist");
+        </script>
+    {% else %}
+    <script type="text/javascript">
+        setCurrentNavBarColor("nav-all");
+    </script>
+    {% endif %}
 {% endblock %}

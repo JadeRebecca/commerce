@@ -6,3 +6,11 @@ body {
   max-height: 400px;
   max-width: 500px;
 }
+
+/*override the theme*/
+.review_box .form-control {
+  height: 100px;
+}
+.s_product_text .product_count .input-number {
+  width: 100px;
+}

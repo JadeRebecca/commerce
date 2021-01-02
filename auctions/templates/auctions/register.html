@@ -28,3 +28,9 @@
     Already have an account? <a href="{% url 'login' %}">Log In here.</a>
 
 {% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        setCurrentNavBarColor("nav-register");
+    </script>
+{% endblock %}
