@@ -8,6 +8,9 @@ body {
 }
 
 /*override the theme*/
+.main_menu .navbar {
+  padding-top: 30px;
+}
 .review_box .form-control {
   height: 100px;
 }
