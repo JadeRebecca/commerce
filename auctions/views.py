@@ -13,14 +13,14 @@ from .forms import CommentForm, BidForm, ListingForm
 
 
 def index(request):
-    listings = Listing.objects.all()
+    listings = Listing.objects.filter(active=True)
     for l in listings:
         if Bid.objects.filter(listing=l.id).exists():
             foundMax = Bid.objects.filter(listing=l.id).aggregate(Max('amount'))
             bidMax = foundMax['amount__max']
-            l.bidMax = bidMax
+            l.bidMax = "{:.2f}".format(bidMax)
         else:
-            l.bidMax = l.starting_bid        
+            l.bidMax = "{:.2f}".format(l.starting_bid)       
     return render(request, "auctions/index.html",{
         "listings" : listings
     })
@@ -92,21 +92,27 @@ def listing_logged_in(request, listing_id, username):
     creator = False
     if listing.created_by == request.user:
         creator = True
+    #winner management
+    winner = False
+    if not listing.active:
+        winnerBid =Bid.objects.get(listing=listing_id, winner=True)
+        if winnerBid.user == request.user:
+            winner = True
+
     context = {
         'listing' : listing,
         'comments' : comments,
         'in_my_watchlist' : in_my_watchlist,
-        'creator': creator
+        'creator': creator,
+        'winner': winner
     }
 
     #bid management
     if Bid.objects.filter(listing=listing_id).exists():
         foundMax = Bid.objects.filter(listing=listing_id).aggregate(Max('amount'))
         bidMax = foundMax['amount__max']
-        print("il y a une enchère max")
     else:
         bidMax = listing.starting_bid
-        print("no bid yet")
 
     if request.method == "POST":
         form = BidForm(request.POST)
@@ -124,7 +130,7 @@ def listing_logged_in(request, listing_id, username):
         else:
             context['errors'] = form.errors.items()
               
-    context['bidMax'] = bidMax
+    context['bidMax'] = "{:.2f}".format(bidMax)
         
     bidForm = BidForm()
     form = CommentForm()
@@ -136,23 +142,30 @@ def listing_logged_in(request, listing_id, username):
 def listing(request, listing_id):
     listing_id = int(listing_id)
     listing = get_object_or_404(Listing, pk=listing_id)
+    #found the price
+    if Bid.objects.filter(listing=listing_id).exists():
+        foundMax = Bid.objects.filter(listing=listing_id).aggregate(Max('amount'))
+        bidMax = foundMax['amount__max']
+    else:
+        bidMax = listing.starting_bid
     comments = Comment.objects.filter(listing=listing_id)
     return render(request, "auctions/listing.html",{
         "listing": listing,
-        "comments": comments
+        "comments": comments,
+        "bidMax" : "{:.2f}".format(bidMax)
     })
 
 def listing_categorie(request, cat_id):
     cat_id = int(cat_id)
     categorie = Categorie.objects.get(pk=cat_id)
-    listings = Listing.objects.filter(categorie=cat_id)
+    listings = Listing.objects.filter(categorie=cat_id, active=True)
     for l in listings:
         if Bid.objects.filter(listing=l.id).exists():
             foundMax = Bid.objects.filter(listing=l.id).aggregate(Max('amount'))
             bidMax = foundMax['amount__max']
-            l.bidMax = bidMax
+            l.bidMax = "{:.2f}".format(bidMax)
         else:
-            l.bidMax = l.starting_bid  
+            l.bidMax = "{:.2f}".format(l.starting_bid) 
     return render(request, "auctions/index.html",{
         "listings": listings,
         "categorie": categorie
@@ -190,9 +203,9 @@ def watchlist(request):
         if Bid.objects.filter(listing=l.id).exists():
             foundMax = Bid.objects.filter(listing=l.id).aggregate(Max('amount'))
             bidMax = foundMax['amount__max']
-            l.bidMax = bidMax
+            l.bidMax = "{:.2f}".format(bidMax)
         else:
-            l.bidMax = l.starting_bid        
+            l.bidMax = "{:.2f}".format(l.starting_bid)      
     return render(request, "auctions/index.html",{
         "listings" : listings,
         "watchlist": True
@@ -228,6 +241,13 @@ def close_listing(request, listing_id):
         listing = Listing.objects.get(pk=int(listing_id))
         listing.active = False
         listing.save()
+        #todo
+        if Bid.objects.filter(listing=listing.id).exists():
+            bidMax = Bid.objects.filter(listing=listing.id).aggregate(Max('amount'))
+            amountMax = bidMax['amount__max']
+            win = Bid.objects.get(listing=listing.id, amount=amountMax)
+            win.winner = True
+            win.save()
         return HttpResponseRedirect(reverse("listing", args=(listing.id, request.user.username,)))
 
 # @login_required

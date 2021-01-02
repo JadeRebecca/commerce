@@ -71,7 +71,10 @@
                     {% endif %} 
                 {% endif %}
             {% else %}
-                <b>The aution is closed </b>        
+                <b>The aution is closed </b>
+                {% if winner %}  
+                    You won this auction !
+                {% endif %}
             {% endif %}
           </div>
         </div>
