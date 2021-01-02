@@ -88,10 +88,15 @@ def listing_logged_in(request, listing_id, username):
         in_my_watchlist = True
     else:
         in_my_watchlist = False
+    #closing management
+    creator = False
+    if listing.created_by == request.user:
+        creator = True
     context = {
         'listing' : listing,
         'comments' : comments,
-        'in_my_watchlist' : in_my_watchlist
+        'in_my_watchlist' : in_my_watchlist,
+        'creator': creator
     }
 
     #bid management
@@ -139,8 +144,15 @@ def listing(request, listing_id):
 
 def listing_categorie(request, cat_id):
     cat_id = int(cat_id)
-    listings = Listing.objects.filter(categorie=cat_id)
     categorie = Categorie.objects.get(pk=cat_id)
+    listings = Listing.objects.filter(categorie=cat_id)
+    for l in listings:
+        if Bid.objects.filter(listing=l.id).exists():
+            foundMax = Bid.objects.filter(listing=l.id).aggregate(Max('amount'))
+            bidMax = foundMax['amount__max']
+            l.bidMax = bidMax
+        else:
+            l.bidMax = l.starting_bid  
     return render(request, "auctions/index.html",{
         "listings": listings,
         "categorie": categorie
@@ -159,11 +171,16 @@ def create(request):
         f = ListingForm(request.POST)
         if f.is_valid():
             new_listing = f.save()
-            return HttpResponseRedirect(reverse("listing", args=(new_listing.id,)))
+            listing = get_object_or_404(Listing, pk= new_listing.id)
+            listing.created_by = request.user
+            listing.save()
+            return HttpResponseRedirect(reverse("listing", args=(listing.id, request.user.username,)))
         else:
             print(f.errors.as_data())
+    listingForm = ListingForm()
     return render(request, "auctions/create.html",{
-        "categories": categories
+        "categories": categories,
+        "form" : listingForm
     })
     
 @login_required
@@ -204,6 +221,14 @@ def add_comment(request, listing_id):
             new_comment = Comment(listing= Listing.objects.get(pk=listing_id), user=request.user, comment=comment)
             new_comment.save()
             return HttpResponseRedirect(reverse("listing", args=(listing_id, request.user.username,)))
+
+@login_required
+def close_listing(request, listing_id):
+    if request.method == "POST":
+        listing = Listing.objects.get(pk=int(listing_id))
+        listing.active = False
+        listing.save()
+        return HttpResponseRedirect(reverse("listing", args=(listing.id, request.user.username,)))
 
 # @login_required
 # def add_bid(request, listing_id):

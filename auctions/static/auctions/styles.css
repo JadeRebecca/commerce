@@ -11,6 +11,9 @@ body {
 .main_menu .navbar {
   padding-top: 30px;
 }
+.breadcrumb .breadcrumb_iner {
+  height: 100px;
+}
 .review_box .form-control {
   height: 100px;
 }

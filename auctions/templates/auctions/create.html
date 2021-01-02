@@ -2,27 +2,62 @@
 
 {% block body %}
 
+
+<div class="whole-wrap">
+    <div class="container box_1170">
+      
+ 
+    <div class="section-top-border">
+        <div class="row">
+            <div class="col-12">
+                <h3 class="mb-30">Create a new listing</h3>
+                <form action="{% url 'create' %}" method="post"> 
+                    {% csrf_token %}
+                    <div class="mt-10">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                    </div>
+                    <div class="mt-10">
+                        {{ form.description.label_tag }}
+                        {{ form.description }}
+                    </div>
+                    <div class="row mt-10">
+                        <div class="col-12 col-md-6">
+                            {{ form.starting_bid.label_tag }}
+                            {{ form.starting_bid}}$
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ form.start_at.label_tag }}
+                            <input type="datetime-local" name="start_at">
+                        </div>
+                    </div>
+                    <div class="row mt-10">
+                        <div class="col-12 col-md-6">
+                            {{ form.categorie.label_tag }}
+                            {{ form.categorie }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ form.picture.label_tag }}
+                            {{ form.picture }}
+                            <small class="form-text text-muted">Please provide an URL</small>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-right">
+                        <button type="submit" value="submit" class="btn_3">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
     <h2>Create</h2>
     <div class="jumbotron">Users should be able to visit a page to create a new listing. 
         They should be able to specify a title for the listing, a text-based description, and what the starting bid should be. 
         Users should also optionally be able to provide a URL for an image for the listing and/or a category 
         (e.g. Fashion, Toys, Electronics, Home, etc.).
     </div>
-
-    <form action="{% url 'create' %}" method="post"> 
-        {% csrf_token %}
-        <input type="text" name="title" placeholder="Title">
-        <textarea name="description" rows="5" cols="33"></textarea>
-        <input type="datetime-local" name="start_at">
-        <input type="number" required name="starting_bid" min="0.1" step="0.1">
-        <select name="categorie">
-            {% for categorie in categories %}
-            <option value="{{ categorie.id }}">{{ categorie }}</option>
-        {% endfor %}
-        </select>
-        <input type="url" name="picture" placeholder="https://example.com" pattern="https://.*" size="30">
-        <input type="submit" name="Submit">
-    </form>
 
 {% endblock %}
 
